@@ -298,3 +298,19 @@ def read_soi(url="http://www.bom.gov.au/clim_data/IDCKGSH000/soi_monthly.txt"):
         df.insert(2,column+' 3m mean', df[column].rolling(window=3).mean(), allow_duplicates=True)
 
     return df
+
+
+def read_soi_file(file):
+    """
+    Updated to read SOI data from disk
+    Return a Dataframe based on the input text file with datetime index
+    """
+    df = pd.read_csv(file,header=None,names=['date','SOI'])
+    #Declare empty dataframe
+    df['datetime']=pd.to_datetime(df.date,format='%Y%m')
+    df.set_index('datetime',inplace=True)
+    
+    for column in ['SOI']:
+        df.insert(2,column+' 3m mean', df[column].rolling(window=3).mean(), allow_duplicates=True)
+
+    return df
