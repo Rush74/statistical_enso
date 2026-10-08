@@ -276,15 +276,14 @@ def get_classification_scores(y_prob,y_obs,years_ver):
         scores['bias_t3'] = np.sum(y_pred == 2) / np.sum(y_obs == 2)
 
     
-    LEPS_test=calculate_classed_leps_skill(y_obs,y_prob)
-    scores['LEPS skill']=(LEPS_test)
+    scores['LEPS skill']=calculate_classed_leps_skill(y_obs,y_prob)
     scores['BSS'] = brier_skill_score(y_obs,y_prob)
 
     
     return scores
 
 
-# Validation function1: split data into two periods to train/test: 1900-2000, 2001-2025
+# Validation function1: split data into two periods to train/test
 
 def combo_method_SKL_train_test(X1, X2, Y, training_years):
 
@@ -398,26 +397,6 @@ def combo_method_SKL_validation(X1,X2,Y,years,
     # validation_means={"LEPS":0, }
     # for score in scores:
     #     mean_leps = mean_leps+score['LEPS skill']
-
-    # # Calculate mean scores across all iterations
-    # mean_scores = {
-    #     'roni': {
-    #         'LEPS skill': np.mean([
-    #             s['roni']['LEPS skill'] for s in scores
-    #         ]),
-    #         'BSS': np.mean([
-    #             s['roni']['BSS'] for s in scores
-    #         ])
-    #     },
-    #     'oni': {
-    #         'LEPS skill': np.mean([
-    #             s['oni']['LEPS skill'] for s in scores
-    #         ]),
-    #         'BSS': np.mean([
-    #             s['oni']['BSS'] for s in scores
-    #         ])
-    #     }
-    # }
     
     return scores
 
