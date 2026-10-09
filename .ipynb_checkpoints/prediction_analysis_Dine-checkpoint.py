@@ -137,6 +137,28 @@ def brier_skill_score(obs,proba,
 
     return BSS
 
+
+#############################################
+# rows = forecast tercile (p1, p2, p3), columns = observed tercile
+M = np.array([[8, -1, -7],
+              [-1, 2, -1],
+              [-7, -1, 8]]) / 27.0
+U = M.max(axis=0)          # best possible score per observed tercile: 8/27, 2/27, 8/27
+L = M.min(axis=0)          # worst possible score per observed tercile: -7/27, -1/27, -7/27
+
+def leps_skill(j, P): # switched to match my code 
+    """Correct LEPS skill."""
+    s = (P * M[:, j].T).sum(axis=1)       # s_i = sum_k p_k M[k, j_i]
+    u = U[j]
+    l = L[j]
+    S = s.sum()
+    denom = u.sum() if S >= 0 else abs(l.sum())
+    #return {"s": s, "mean_S": s.mean(), "sum_S": S, "sum_S_m": denom, "LEPS_skill": S / denom}
+    leps_skill = S / denom
+    return leps_skill
+###################################################################
+    
+
 def calculate_classed_leps_skill(y_obs, probabilities):
     """
  
@@ -276,7 +298,7 @@ def get_classification_scores(y_prob,y_obs,years_ver):
         scores['bias_t3'] = np.sum(y_pred == 2) / np.sum(y_obs == 2)
 
     
-    scores['LEPS skill']=calculate_classed_leps_skill(y_obs,y_prob)
+    scores['LEPS skill']=leps_skill(y_obs,y_prob) ##############change to bom or mine 
     scores['BSS'] = brier_skill_score(y_obs,y_prob)
 
     
@@ -316,10 +338,14 @@ def combo_method_SKL_train_test(X1, X2, Y, training_years):
     score_roni = get_classification_scores(prob_roni, y_ver, years_ver)
     score_oni = get_classification_scores(prob_oni, y_ver, years_ver)
 
+
     scores['roni'] = score_roni
     scores['oni'] = score_oni
     scores['years_training'] = years_tr
     scores['years_verification'] = years_ver
+    scores['observed_classes'] = y_ver
+    scores['probabilites_roni'] = prob_roni
+    scores['probabilites_oni'] = prob_oni
 
     return scores
 
